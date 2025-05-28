@@ -100,7 +100,7 @@ const ClockCard: React.FC<ClockCardProps> = ({ timeZone, currentTime }) => {
       
       <div className="text-xs text-gray-500 dark:text-gray-500 mt-2 flex justify-between items-center">
         <span>{timeZone.timezone}</span>
-        <span>{formatInTimeZone(currentTime, timeZone.timezone, '(UTC offset:)')}</span>
+        <span>{formatInTimeZone(currentTime, timeZone.timezone, '(xxx)')}</span>
       </div>
     </div>
   );
