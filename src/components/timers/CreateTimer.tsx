@@ -52,7 +52,7 @@ const CreateTimer: React.FC = () => {
           Create New Timer
         </button>
       ) : (
-        <div className="clock-card animate-fade-in">
+        <div className="clock-card animate-fade-in bg-gray-100 dark:bg-gray-700">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-lg">Create New Timer</h3>
             <button

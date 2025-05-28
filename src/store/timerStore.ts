@@ -29,6 +29,8 @@ interface TimerState {
   addLap: (id: string) => void;
   updateTimers: () => void;
   setActiveTimer: (id: string | null) => void;
+  updateTimer: (id: string, name: string, duration: number) => void;
+  updateStopwatchTimerName: (id: string, name: string) => void;
 }
 
 export const useTimerStore = create<TimerState>()(
@@ -193,6 +195,38 @@ export const useTimerStore = create<TimerState>()(
 
       setActiveTimer: (id) => {
         set({ activeTimerId: id });
+      },
+
+      updateTimer: (id, name, duration) => {
+        set(state => ({
+          timers: state.timers.map(timer => {
+            if (timer.id !== id) return timer;
+            
+            return {
+              ...timer,
+              name,
+              duration,
+              status: 'idle',
+              elapsed: 0,
+              startTime: null,
+              endTime: null,
+              laps: []
+            };
+          })
+        }));
+      },
+
+      updateStopwatchTimerName: (id, name) => {
+        set(state => ({
+          timers: state.timers.map(timer => {
+            if (timer.id !== id || timer.mode !== 'stopwatch') return timer;
+            
+            return {
+              ...timer,
+              name
+            };
+          })
+        }));
       }
     }),
     {

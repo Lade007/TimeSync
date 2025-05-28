@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, X } from 'lucide-react';
 import { TimeZone, useClockStore } from '../../store/clockStore';
-import { searchTimeZones, generateTimeZoneId } from '../../utils/timeZoneUtils';
+import { searchTimeZones, generateTimeZoneId, popularTimeZones } from '../../utils/timeZoneUtils';
 
 const AddTimeZone: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,11 +59,15 @@ const AddTimeZone: React.FC = () => {
     setIsOpen(false);
   };
 
+  const displayedResults = searchQuery.length < 2
+    ? popularTimeZones.filter(tz => !timeZones.some(existingTz => existingTz.timezone === tz.timezone))
+    : searchResults;
+
   return (
     <div ref={searchRef} className="relative w-full">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <Search size={18} className="text-gray-500" />
+          <Search size={18} className="text-gray-600 dark:text-gray-300" />
         </div>
         <input
           type="text"
@@ -72,10 +76,14 @@ const AddTimeZone: React.FC = () => {
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
-            if (e.target.value.length >= 2) setIsOpen(true);
+            setIsOpen(true); // Always open dropdown on change
           }}
           onFocus={() => {
-            if (searchQuery.length >= 2) setIsOpen(true);
+            setIsOpen(true); // Always open dropdown on focus
+          }}
+          onBlur={() => {
+            // Delay closing to allow click on results
+            setTimeout(() => setIsOpen(false), 100);
           }}
         />
         {searchQuery && (
@@ -87,15 +95,15 @@ const AddTimeZone: React.FC = () => {
             }}
             aria-label="Clear search query"
           >
-            <X size={18} className="text-gray-500" />
+            <X size={18} className="text-gray-600 dark:text-gray-300" />
           </button>
         )}
       </div>
 
-      {isOpen && searchResults.length > 0 && (
+      {isOpen && displayedResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md max-h-60 overflow-y-auto animate-slide-up">
           <ul className="py-1">
-            {searchResults.map((result) => (
+            {displayedResults.map((result) => (
               <li key={result.id} className="px-2">
                 <button
                   className="flex justify-between items-center w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
@@ -117,9 +125,15 @@ const AddTimeZone: React.FC = () => {
         </div>
       )}
 
-      {isOpen && searchQuery.length >= 2 && searchResults.length === 0 && (
+      {isOpen && searchQuery.length >= 2 && displayedResults.length === 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4 text-center animate-slide-up">
           <p className="text-gray-600 dark:text-gray-400">No matching cities found</p>
+        </div>
+      )}
+
+      {isOpen && searchQuery.length < 2 && displayedResults.length === 0 && (
+        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4 text-center animate-slide-up">
+          <p className="text-gray-600 dark:text-gray-400">No popular timezones available.</p>
         </div>
       )}
     </div>

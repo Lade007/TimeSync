@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, Flag, Check } from 'lucide-react';
+import { Play, Pause, RotateCcw, Flag } from 'lucide-react';
 import { useTimerStore, formatTime, TimerStatus } from '../../store/timerStore';
+import StopwatchTimerEditForm from './StopwatchTimerEditForm';
 
 interface StopwatchTimerProps {
   id: string;
@@ -18,12 +19,15 @@ const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   laps
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(name);
   
-  const { startTimer, pauseTimer, resetTimer, addLap, removeTimer } = useTimerStore();
+  const { startTimer, pauseTimer, resetTimer, addLap, updateStopwatchTimerName } = useTimerStore();
   
-  const handleSaveEdit = () => {
-    // In a real app, we would update the timer with new values
+  const handleSaveEdit = (newName: string) => {
+    updateStopwatchTimerName(id, newName);
+    setIsEditing(false);
+  };
+  
+  const handleCancelEdit = () => {
     setIsEditing(false);
   };
   
@@ -34,38 +38,13 @@ const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   });
   
   return (
-    <div className="clock-card">
+    <div className={`clock-card ${status === 'running' ? 'border-primary-500 border-4' : status === 'paused' ? 'border-secondary-500 border-4' : ''}`}>
       {isEditing ? (
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Stopwatch Name
-            </label>
-            <input
-              type="text"
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              className="input w-full"
-              placeholder="Stopwatch Name"
-            />
-          </div>
-          
-          <div className="flex justify-end space-x-2 pt-2">
-            <button
-              onClick={() => setIsEditing(false)}
-              className="btn btn-secondary"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveEdit}
-              className="btn btn-primary"
-            >
-              <Check size={16} className="mr-1" />
-              Save
-            </button>
-          </div>
-        </div>
+        <StopwatchTimerEditForm
+          initialName={name}
+          onSave={handleSaveEdit}
+          onCancel={handleCancelEdit}
+        />
       ) : (
         <>
           <div className="flex justify-between items-start mb-2">
@@ -83,12 +62,12 @@ const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
                 className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                 aria-label="Reset timer"
               >
-                <RotateCcw size={18} className="text-gray-500" />
+                <RotateCcw size={18} className="text-gray-600 dark:text-gray-300" />
               </button>
             </div>
           </div>
           
-          <div className="my-4 flex flex-col items-center">
+          <div className="my-6 flex flex-col items-center">
             <p className="text-3xl font-mono font-semibold text-gray-900 dark:text-white">
               {formatTime(elapsed)}
             </p>

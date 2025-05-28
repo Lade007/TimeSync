@@ -23,15 +23,15 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
   ];
   
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm z-10 sticky top-0">
+    <header className="bg-gray-50 dark:bg-gray-900 shadow-sm z-10 sticky top-0">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between py-3">
+          <div className="flex items-center space-x-3">
             <Clock className="text-primary-500" size={24} />
             <span className="font-bold text-xl tracking-tight">TimeSync</span>
           </div>
           
-          <nav className="hidden md:flex space-x-1">
+          <nav className="hidden md:flex space-x-2">
             <div className="tabs">
               {navItems.map((item) => (
                 <button
@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
         </div>
         
         {/* Mobile Navigation */}
-        <div className="md:hidden pb-3">
+        <div className="md:hidden pb-2">
           <div className="tabs w-full">
             {navItems.map((item) => (
               <button
