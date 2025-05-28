@@ -35,7 +35,7 @@ interface TimerState {
 
 export const useTimerStore = create<TimerState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       timers: [],
       activeTimerId: null,
 
