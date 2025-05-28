@@ -5,14 +5,26 @@ import { searchTimeZones, generateTimeZoneId } from '../../utils/timeZoneUtils';
 
 const AddTimeZone: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TimeZone[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const { addTimeZone, timeZones } = useClockStore();
 
+  // Debounce search query
   useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const results = searchTimeZones(searchQuery);
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300); // 300ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (debouncedSearchQuery.length >= 2) {
+      const results = searchTimeZones(debouncedSearchQuery);
       // Filter out already added time zones
       const filteredResults = results.filter(
         result => !timeZones.some(tz => tz.timezone === result.timezone)
@@ -21,7 +33,7 @@ const AddTimeZone: React.FC = () => {
     } else {
       setSearchResults([]);
     }
-  }, [searchQuery, timeZones]);
+  }, [debouncedSearchQuery, timeZones]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,6 +85,7 @@ const AddTimeZone: React.FC = () => {
               setSearchQuery('');
               setIsOpen(false);
             }}
+            aria-label="Clear search query"
           >
             <X size={18} className="text-gray-500" />
           </button>

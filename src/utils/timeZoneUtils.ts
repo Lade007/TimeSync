@@ -176,3 +176,17 @@ export const searchTimeZones = (query: string): TimeZone[] => {
 export const generateTimeZoneId = (): string => {
   return Date.now().toString();
 };
+
+// Add a helper function to determine if it's daytime in a given timezone
+export const isDaytimeInTimeZone = (date: Date, timeZone: string): boolean => {
+  try {
+    const hour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone, hour: 'numeric', hourCycle: 'h23' }).format(date));
+    // Consider hours between 6 (inclusive) and 18 (exclusive) as daytime
+    return hour >= 6 && hour < 18;
+  } catch (error) {
+    console.error('Error determining daytime for timezone:', error);
+    // Default to true or false, or handle as an unknown state
+    // For simplicity, we'll return true
+    return true;
+  }
+};

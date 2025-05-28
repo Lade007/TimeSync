@@ -58,8 +58,8 @@ export default {
         },
       },
       boxShadow: {
-        'clock-card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-        'clock-card-dark': '0 4px 6px -1px rgba(255, 255, 255, 0.05), 0 2px 4px -2px rgba(255, 255, 255, 0.05)',
+        'clock-card': '0 2px 4px 0 rgba(0, 0, 0, 0.05)',
+        'clock-card-dark': '0 2px 4px 0 rgba(255, 255, 255, 0.03)',
       },
       animation: {
         'spin-slow': 'spin 20s linear infinite',

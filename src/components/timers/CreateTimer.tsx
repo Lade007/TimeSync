@@ -9,11 +9,22 @@ const CreateTimer: React.FC = () => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(5);
   const [seconds, setSeconds] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   
   const { createTimer } = useTimerStore();
   
   const handleCreateTimer = () => {
     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+    
+    // Validation for countdown timer duration
+    if (timerMode === 'countdown' && totalSeconds <= 0) {
+      setError('Countdown duration must be greater than 0');
+      return;
+    }
+
+    // Clear any previous errors
+    setError(null);
+
     const name = timerName.trim() || (timerMode === 'countdown' ? 'Countdown' : 'Stopwatch');
     
     createTimer(name, timerMode, totalSeconds);
@@ -27,6 +38,7 @@ const CreateTimer: React.FC = () => {
     setMinutes(5);
     setSeconds(0);
     setIsOpen(false);
+    setError(null);
   };
   
   return (
@@ -46,6 +58,7 @@ const CreateTimer: React.FC = () => {
             <button
               onClick={() => setIsOpen(false)}
               className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+              aria-label="Close create timer form"
             >
               <X size={18} className="text-gray-500" />
             </button>
@@ -53,11 +66,12 @@ const CreateTimer: React.FC = () => {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="timerName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Timer Name
               </label>
               <input
                 type="text"
+                id="timerName"
                 value={timerName}
                 onChange={(e) => setTimerName(e.target.value)}
                 className="input w-full"
@@ -98,46 +112,56 @@ const CreateTimer: React.FC = () => {
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label htmlFor="countdownHours" className="block text-xs text-gray-500 mb-1">
                       Hours
                     </label>
                     <input
                       type="number"
+                      id="countdownHours"
                       min="0"
                       max="23"
                       value={hours}
                       onChange={(e) => setHours(parseInt(e.target.value) || 0)}
                       className="input w-full"
+                      aria-label="Hours for countdown duration"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label htmlFor="countdownMinutes" className="block text-xs text-gray-500 mb-1">
                       Minutes
                     </label>
                     <input
                       type="number"
+                      id="countdownMinutes"
                       min="0"
                       max="59"
                       value={minutes}
                       onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
                       className="input w-full"
+                      aria-label="Minutes for countdown duration"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label htmlFor="countdownSeconds" className="block text-xs text-gray-500 mb-1">
                       Seconds
                     </label>
                     <input
                       type="number"
+                      id="countdownSeconds"
                       min="0"
                       max="59"
                       value={seconds}
                       onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
                       className="input w-full"
+                      aria-label="Seconds for countdown duration"
                     />
                   </div>
                 </div>
                 
+                {error && (
+                  <p className="text-error-700 text-sm mt-2">{error}</p>
+                )}
+
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   <button
                     onClick={() => { setMinutes(1); setSeconds(0); setHours(0); }}

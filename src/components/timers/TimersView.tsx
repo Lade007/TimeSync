@@ -6,7 +6,7 @@ import StopwatchTimer from './StopwatchTimer';
 import CreateTimer from './CreateTimer';
 
 const TimersView: React.FC = () => {
-  const { timers, updateTimers, activeTimerId, setActiveTimer } = useTimerStore();
+  const { timers, updateTimers } = useTimerStore();
   
   // Update running timers every 100ms
   useEffect(() => {
@@ -45,7 +45,7 @@ const TimersView: React.FC = () => {
                 <Clock size={18} className="text-primary-500 mr-2" />
                 <h2 className="text-xl font-semibold">Countdown Timers</h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {countdownTimers.map(timer => (
                   <CountdownTimer
                     key={timer.id}
@@ -66,7 +66,7 @@ const TimersView: React.FC = () => {
                 <Timer size={18} className="text-primary-500 mr-2" />
                 <h2 className="text-xl font-semibold">Stopwatches</h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {stopwatchTimers.map(timer => (
                   <StopwatchTimer
                     key={timer.id}

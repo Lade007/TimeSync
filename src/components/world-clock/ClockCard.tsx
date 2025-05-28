@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Heart, Trash2, MoreHorizontal } from 'lucide-react';
+import { Heart, Trash2, MoreHorizontal, Sun, Moon } from 'lucide-react';
 import { TimeZone, formatTimeForTimeZone, formatDateForTimeZone, useClockStore } from '../../store/clockStore';
-import { getTimeDifference, formatTimeDifference, getLocalTimeZone } from '../../utils/timeZoneUtils';
+import { getTimeDifference, formatTimeDifference, getLocalTimeZone, isDaytimeInTimeZone } from '../../utils/timeZoneUtils';
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface ClockCardProps {
   timeZone: TimeZone;
@@ -24,6 +25,8 @@ const ClockCard: React.FC<ClockCardProps> = ({ timeZone, currentTime }) => {
   const timeDiff = getTimeDifference(localTimeZone, timeZone.timezone);
   const timeDiffFormatted = formatTimeDifference(timeDiff);
   const isLocal = localTimeZone === timeZone.timezone;
+  
+  const isDaytime = isDaytimeInTimeZone(currentTime, timeZone.timezone);
   
   return (
     <div className="clock-card animate-fade-in hover:shadow-lg">
@@ -81,7 +84,14 @@ const ClockCard: React.FC<ClockCardProps> = ({ timeZone, currentTime }) => {
       </div>
       
       <div className="text-center my-4">
-        <p className="text-3xl font-mono font-semibold text-gray-900 dark:text-white">{formattedTime}</p>
+        <p className="text-3xl font-mono font-semibold text-gray-900 dark:text-white flex items-center justify-center">
+          {formattedTime}
+          {isDaytime ? (
+            <Sun size={24} className="ml-2 text-warning-500" />
+          ) : (
+            <Moon size={24} className="ml-2 text-gray-500" />
+          )}
+        </p>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{formattedDate}</p>
         <p className="text-xs mt-2 text-gray-500 dark:text-gray-500">
           {isLocal ? 'Your local time' : `${timeDiffFormatted} your local time`}
@@ -90,7 +100,7 @@ const ClockCard: React.FC<ClockCardProps> = ({ timeZone, currentTime }) => {
       
       <div className="text-xs text-gray-500 dark:text-gray-500 mt-4 flex justify-between items-center">
         <span>{timeZone.timezone}</span>
-        <span>{timeZone.offset}</span>
+        <span>{formatInTimeZone(currentTime, timeZone.timezone, '(UTC XXX)')}</span>
       </div>
     </div>
   );
