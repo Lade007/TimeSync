@@ -23,11 +23,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   const [editedMinutes, setEditedMinutes] = useState(Math.floor((duration % 3600) / 60));
   const [editedSeconds, setEditedSeconds] = useState(duration % 60);
   
-  const { startTimer, pauseTimer, resetTimer, removeTimer } = useTimerStore();
+  const { startTimer, pauseTimer, resetTimer } = useTimerStore();
   
   // Calculate remaining time
-  const remainingMs = Math.max(0, (duration * 1000) - elapsed);
-  const progress = elapsed / (duration * 1000);
+  const totalDurationMs = duration * 1000;
+  const remainingMs = Math.max(0, totalDurationMs - elapsed);
+  const progress = totalDurationMs > 0 ? elapsed / totalDurationMs : 0;
   const percentage = Math.min(100, Math.max(0, progress * 100));
   
   const handleSaveEdit = () => {
@@ -41,11 +42,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       {isEditing ? (
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="editTimerName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Timer Name
             </label>
             <input
               type="text"
+              id="editTimerName"
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
               className="input w-full"
@@ -55,11 +57,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
           
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="editHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Hours
               </label>
               <input
                 type="number"
+                id="editHours"
                 min="0"
                 max="23"
                 value={editedHours}
@@ -68,11 +71,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="editMinutes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Minutes
               </label>
               <input
                 type="number"
+                id="editMinutes"
                 min="0"
                 max="59"
                 value={editedMinutes}
@@ -81,11 +85,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="editSeconds" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Seconds
               </label>
               <input
                 type="number"
+                id="editSeconds"
                 min="0"
                 max="59"
                 value={editedSeconds}
@@ -119,7 +124,11 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
                 {name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {status === 'completed' ? 'Completed' : 'Countdown Timer'}
+                {status === 'completed' ? (
+                  <span className="text-success-700 font-semibold">Completed</span>
+                ) : (
+                  'Countdown Timer'
+                )}
               </p>
             </div>
             <div className="flex space-x-1">

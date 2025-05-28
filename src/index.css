@@ -35,7 +35,11 @@
 
 @layer components {
   .clock-card {
-    @apply bg-white dark:bg-gray-800 rounded-xl p-4 shadow-clock-card dark:shadow-clock-card-dark transition-all duration-200;
+    @apply bg-white dark:bg-gray-800 rounded-xl p-4 shadow-clock-card dark:shadow-clock-card-dark transition-all duration-200 border border-transparent;
+  }
+
+  .clock-card:hover {
+    @apply border-primary-500;
   }
 
   .btn {
