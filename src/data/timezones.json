@@ -1,0 +1,35 @@
+[
+  {
+    "id": "asia-tokyo",
+    "name": "Tokyo",
+    "city": "Tokyo",
+    "country": "Japan",
+    "timezone": "Asia/Tokyo",
+    "offset": "UTC+9",
+    "coordinates": [35.6895, 139.6917],
+    "favorite": false,
+    "flag": "🇯🇵"
+  },
+  {
+    "id": "america-new_york",
+    "name": "New York",
+    "city": "New York",
+    "country": "United States",
+    "timezone": "America/New_York",
+    "offset": "UTC-5",
+    "coordinates": [40.7128, -74.0060],
+    "favorite": false,
+    "flag": "🇺🇸"
+  },
+  {
+    "id": "europe-london",
+    "name": "London",
+    "city": "London",
+    "country": "United Kingdom",
+    "timezone": "Europe/London",
+    "offset": "UTC+0",
+    "coordinates": [51.5074, -0.1278],
+    "favorite": false,
+    "flag": "🇬🇧"
+  }
+] 

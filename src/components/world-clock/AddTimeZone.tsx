@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, X } from 'lucide-react';
 import { TimeZone, useClockStore } from '../../store/clockStore';
-import { searchTimeZones, generateTimeZoneId, popularTimeZones } from '../../utils/timeZoneUtils';
 
 const AddTimeZone: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -9,7 +8,7 @@ const AddTimeZone: React.FC = () => {
   const [searchResults, setSearchResults] = useState<TimeZone[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const { addTimeZone, timeZones } = useClockStore();
+  const { allTimezonesData, addedTimeZones, addUserTimeZone } = useClockStore();
 
   // Debounce search query
   useEffect(() => {
@@ -24,16 +23,22 @@ const AddTimeZone: React.FC = () => {
 
   useEffect(() => {
     if (debouncedSearchQuery.length >= 2) {
-      const results = searchTimeZones(debouncedSearchQuery);
-      // Filter out already added time zones
-      const filteredResults = results.filter(
-        result => !timeZones.some(tz => tz.timezone === result.timezone)
+      const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
+      // Filter from the comprehensive list
+      const results = allTimezonesData.filter(tz =>
+        tz.city.toLowerCase().includes(lowerCaseQuery) ||
+        tz.country.toLowerCase().includes(lowerCaseQuery) ||
+        tz.timezone.toLowerCase().includes(lowerCaseQuery)
+      );
+      // Filter out already added time zones from the results
+      const filteredResults = results.filter(result =>
+        !addedTimeZones.some(addedTz => addedTz.timezone === result.timezone)
       );
       setSearchResults(filteredResults);
     } else {
       setSearchResults([]);
     }
-  }, [debouncedSearchQuery, timeZones]);
+  }, [debouncedSearchQuery, allTimezonesData, addedTimeZones]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,17 +56,15 @@ const AddTimeZone: React.FC = () => {
   const handleAddTimeZone = (tz: TimeZone) => {
     const newTimeZone = {
       ...tz,
-      id: generateTimeZoneId()
+      // Use the existing ID from the timezone data
     };
     
-    addTimeZone(newTimeZone);
+    addUserTimeZone(newTimeZone);
     setSearchQuery('');
     setIsOpen(false);
   };
 
-  const displayedResults = searchQuery.length < 2
-    ? popularTimeZones.filter(tz => !timeZones.some(existingTz => existingTz.timezone === tz.timezone))
-    : searchResults;
+  const displayedResults = searchResults;
 
   return (
     <div ref={searchRef} className="relative w-full">

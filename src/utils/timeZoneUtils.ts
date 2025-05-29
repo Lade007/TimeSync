@@ -1,168 +1,6 @@
 import { TimeZone } from '../store/clockStore';
-
-// Simplified timezone database for demo purposes
-export const popularTimeZones: TimeZone[] = [
-  {
-    id: 'new-york',
-    name: 'New York',
-    city: 'New York',
-    country: 'United States',
-    timezone: 'America/New_York',
-    offset: 'UTC-5',
-    coordinates: [-74.006, 40.7128],
-    favorite: false,
-  },
-  {
-    id: 'los-angeles',
-    name: 'Los Angeles',
-    city: 'Los Angeles',
-    country: 'United States',
-    timezone: 'America/Los_Angeles',
-    offset: 'UTC-8',
-    coordinates: [-118.2437, 34.0522],
-    favorite: false,
-  },
-  {
-    id: 'london',
-    name: 'London',
-    city: 'London',
-    country: 'United Kingdom',
-    timezone: 'Europe/London',
-    offset: 'UTC+0',
-    coordinates: [-0.1278, 51.5074],
-    favorite: false,
-  },
-  {
-    id: 'paris',
-    name: 'Paris',
-    city: 'Paris',
-    country: 'France',
-    timezone: 'Europe/Paris',
-    offset: 'UTC+1',
-    coordinates: [2.3522, 48.8566],
-    favorite: false,
-  },
-  {
-    id: 'berlin',
-    name: 'Berlin',
-    city: 'Berlin',
-    country: 'Germany',
-    timezone: 'Europe/Berlin',
-    offset: 'UTC+1',
-    coordinates: [13.4050, 52.5200],
-    favorite: false,
-  },
-  {
-    id: 'tokyo',
-    name: 'Tokyo',
-    city: 'Tokyo',
-    country: 'Japan',
-    timezone: 'Asia/Tokyo',
-    offset: 'UTC+9',
-    coordinates: [139.6503, 35.6762],
-    favorite: false,
-  },
-  {
-    id: 'sydney',
-    name: 'Sydney',
-    city: 'Sydney',
-    country: 'Australia',
-    timezone: 'Australia/Sydney',
-    offset: 'UTC+10',
-    coordinates: [151.2093, -33.8688],
-    favorite: false,
-  },
-  {
-    id: 'auckland',
-    name: 'Auckland',
-    city: 'Auckland',
-    country: 'New Zealand',
-    timezone: 'Pacific/Auckland',
-    offset: 'UTC+12',
-    coordinates: [174.7633, -36.8485],
-    favorite: false,
-  },
-  {
-    id: 'dubai',
-    name: 'Dubai',
-    city: 'Dubai',
-    country: 'United Arab Emirates',
-    timezone: 'Asia/Dubai',
-    offset: 'UTC+4',
-    coordinates: [55.2708, 25.2048],
-    favorite: false,
-  },
-  {
-    id: 'singapore',
-    name: 'Singapore',
-    city: 'Singapore',
-    country: 'Singapore',
-    timezone: 'Asia/Singapore',
-    offset: 'UTC+8',
-    coordinates: [103.8198, 1.3521],
-    favorite: false,
-  },
-  {
-    id: 'rio',
-    name: 'Rio de Janeiro',
-    city: 'Rio de Janeiro',
-    country: 'Brazil',
-    timezone: 'America/Sao_Paulo',
-    offset: 'UTC-3',
-    coordinates: [-43.1729, -22.9068],
-    favorite: false,
-  },
-  {
-    id: 'johannesburg',
-    name: 'Johannesburg',
-    city: 'Johannesburg',
-    country: 'South Africa',
-    timezone: 'Africa/Johannesburg',
-    offset: 'UTC+2',
-    coordinates: [28.0473, -26.2041],
-    favorite: false,
-  },
-  {
-    id: 'shanghai',
-    name: 'Shanghai',
-    city: 'Shanghai',
-    country: 'China',
-    timezone: 'Asia/Shanghai',
-    offset: 'UTC+8',
-    coordinates: [121.4648, 31.2243],
-    favorite: false,
-  },
-  {
-    id: 'moscow',
-    name: 'Moscow',
-    city: 'Moscow',
-    country: 'Russia',
-    timezone: 'Europe/Moscow',
-    offset: 'UTC+3',
-    coordinates: [37.6173, 55.7558],
-    favorite: false,
-  },
-  {
-    id: 'cairo',
-    name: 'Cairo',
-    city: 'Cairo',
-    country: 'Egypt',
-    timezone: 'Africa/Cairo',
-    offset: 'UTC+2',
-    coordinates: [31.2357, 30.0444],
-    favorite: false,
-  },
-  {
-    id: 'mexico-city',
-    name: 'Mexico City',
-    city: 'Mexico City',
-    country: 'Mexico',
-    timezone: 'America/Mexico_City',
-    offset: 'UTC-6',
-    coordinates: [-99.1332, 19.4326],
-    favorite: false,
-  },
-];
+import { formatInTimeZone } from 'date-fns-tz';
+import { format } from 'date-fns';
 
 // Calculate time difference between two timezones
 export const getTimeDifference = (timezone1: string, timezone2: string): number => {
@@ -199,24 +37,6 @@ export const getLocalTimeZone = (): string => {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
-// Filter timezones by search query
-export const searchTimeZones = (query: string): TimeZone[] => {
-  const normalizedQuery = query.toLowerCase().trim();
-  
-  if (!normalizedQuery) return [];
-  
-  return popularTimeZones.filter(tz => 
-    tz.city.toLowerCase().includes(normalizedQuery) ||
-    tz.country.toLowerCase().includes(normalizedQuery) ||
-    tz.name.toLowerCase().includes(normalizedQuery)
-  );
-};
-
-// Generate a unique ID for a new timezone
-export const generateTimeZoneId = (): string => {
-  return Date.now().toString();
-};
-
 // Add a helper function to determine if it's daytime in a given timezone
 export const isDaytimeInTimeZone = (date: Date, timeZone: string): boolean => {
   try {
@@ -228,5 +48,69 @@ export const isDaytimeInTimeZone = (date: Date, timeZone: string): boolean => {
     // Default to true or false, or handle as an unknown state
     // For simplicity, we'll return true
     return true;
+  }
+};
+
+// Haversine formula to calculate distance between two lat/lng points in kilometers
+function getDistance(coords1: [number, number], coords2: [number, number]): number {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (coords2[0] - coords1[0]) * Math.PI / 180;
+  const dLng = (coords2[1] - coords1[1]) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(coords1[0] * Math.PI / 180) *
+    Math.cos(coords2[0] * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in km
+  return distance;
+}
+
+// Find the closest timezone to a given coordinate from a list of timezones
+export function findClosestTimeZone(
+  coordinates: [number, number],
+  timezones: TimeZone[]
+): TimeZone | null {
+  if (!timezones || timezones.length === 0) {
+    return null;
+  }
+
+  let closestTimeZone: TimeZone | null = null;
+  let minDistance = Infinity;
+
+  for (const timezone of timezones) {
+    if (timezone.coordinates && timezone.coordinates.length === 2) {
+      const distance = getDistance(coordinates, timezone.coordinates);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTimeZone = timezone;
+      }
+    }
+  }
+
+  return closestTimeZone;
+}
+
+// Helper function to format time for a timezone
+export const formatTimeForTimeZone = (date: Date, timeZone: string, format24h = false) => {
+  try {
+    return formatInTimeZone(
+      date, 
+      timeZone, 
+      format24h ? 'HH:mm:ss' : 'h:mm:ss a'
+    );
+  } catch (error) {
+    console.error('Error formatting time for timezone:', error);
+    return format(date, format24h ? 'HH:mm:ss' : 'h:mm:ss a');
+  }
+};
+
+// Format date for timezone
+export const formatDateForTimeZone = (date: Date, timeZone: string) => {
+  try {
+    return formatInTimeZone(date, timeZone, 'EEEE, MMMM d, yyyy');
+  } catch (error) {
+    console.error('Error formatting date for timezone:', error);
+    return format(date, 'EEEE, MMMM d, yyyy');
   }
 };

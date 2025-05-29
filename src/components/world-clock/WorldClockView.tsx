@@ -4,9 +4,10 @@ import { useClockStore } from '../../store/clockStore';
 import ClockCard from './ClockCard';
 import AddTimeZone from './AddTimeZone';
 import { getLocalTimeZone } from '../../utils/timeZoneUtils';
+import LocalDigitalClock from './LocalDigitalClock';
 
 const WorldClockView: React.FC = () => {
-  const { timeZones, currentTime, updateCurrentTime, toggleMap } = useClockStore();
+  const { addedTimeZones, currentTime, updateCurrentTime, toggleMap } = useClockStore();
   
   // Update time every second
   useEffect(() => {
@@ -20,16 +21,16 @@ const WorldClockView: React.FC = () => {
   // Make sure we have the local timezone
   useEffect(() => {
     const localTz = getLocalTimeZone();
-    const hasLocalTimeZone = timeZones.some(tz => tz.timezone === localTz);
+    const hasLocalTimeZone = addedTimeZones.some(tz => tz.timezone === localTz);
     
     if (!hasLocalTimeZone && localTz) {
       // This is just a placeholder - in a real app we would have a
       // complete timezone database to look up the proper info
     }
-  }, [timeZones]);
+  }, [addedTimeZones]);
 
   // Sort timezones: favorites first, then alphabetical
-  const sortedTimeZones = [...timeZones].sort((a, b) => {
+  const sortedTimeZones = [...addedTimeZones].sort((a, b) => {
     if (a.favorite === b.favorite) {
       return a.city.localeCompare(b.city);
     }
@@ -53,7 +54,10 @@ const WorldClockView: React.FC = () => {
         </button>
       </div>
 
-      {sortedTimeZones.length === 0 ? (
+      <LocalDigitalClock />
+
+      {/* Display all clocks from addedTimeZones */}
+      {addedTimeZones.length === 0 ? (
         <div className="clock-card flex flex-col items-center justify-center py-10">
           <Clock size={48} className="text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
